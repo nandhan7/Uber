@@ -227,3 +227,138 @@ The request body must include the following fields:
 - The `+password` selector in the `findOne` query ensures the password field is retrieved for comparison.
 
 ---
+
+## Description
+
+The `/users/profile` endpoint retrieves the currently authenticated user's profile, while the `/users/logout` endpoint logs out the user by blacklisting their token and clearing the authentication cookie.
+
+---
+
+## Endpoints
+
+### **GET** `/users/profile`
+
+#### Description
+
+Retrieves the authenticated user's profile details.
+
+#### Authorization
+
+Requires a valid JWT token in the request headers (`Authorization: Bearer <token>`) or cookies.
+
+#### Response
+
+- **Status Code**: `200 OK`
+- **Description**: Successfully retrieves the user's profile.
+
+##### Example Response Body
+
+```json
+{
+  "_id": "64df29f9f2d3e8c5a93e",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com"
+}
+```
+
+#### Error Responses
+
+- **Status Code**: `401 Unauthorized`
+  - **Description**: User is not authenticated or token is invalid.
+
+##### Example Error Response
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+### **GET** `/users/logout`
+
+#### Description
+
+Logs out the authenticated user by clearing the authentication cookie and blacklisting the token.
+
+#### Authorization
+
+Requires a valid JWT token in the request headers (`Authorization: Bearer <token>`) or cookies.
+
+#### Response
+
+- **Status Code**: `200 OK`
+- **Description**: Successfully logs out the user.
+
+##### Example Response Body
+
+```json
+{
+  "message": "Logged Out"
+}
+```
+
+#### Error Responses
+
+- **Status Code**: `401 Unauthorized`
+  - **Description**: User is not authenticated or token is invalid.
+
+##### Example Error Response
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+## Authentication Middleware
+
+### **authUser** Middleware
+
+#### Description
+
+Authenticates a user by verifying their JWT token from the `Authorization` header or `token` cookie.
+
+#### Logic
+
+1. Extracts the token from cookies or `Authorization` header.
+2. Checks if the token is blacklisted.
+3. Verifies the token using `JWT_SECRET`.
+4. Attaches the decoded user object to `req.user` if valid.
+
+#### Error Handling
+
+- If no token is provided, or if the token is invalid/blacklisted, returns a `401 Unauthorized` response.
+
+#### Example Error Response
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+## Implementation Details
+
+### Logout Process
+
+1. Clears the `token` cookie.
+2. Extracts the token from the request headers or cookies.
+3. Stores the token in a blacklist collection to prevent reuse.
+
+---
+
+## Dependencies
+
+- **bcrypt**: For secure password handling.
+- **jsonwebtoken**: For token generation and verification.
+- **cookies**: For handling session cookies in the browser.
+- **mongoose**: For interacting with MongoDB collections (e.g., user and token blacklist).
