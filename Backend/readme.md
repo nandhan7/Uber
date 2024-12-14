@@ -362,3 +362,93 @@ Authenticates a user by verifying their JWT token from the `Authorization` heade
 - **jsonwebtoken**: For token generation and verification.
 - **cookies**: For handling session cookies in the browser.
 - **mongoose**: For interacting with MongoDB collections (e.g., user and token blacklist).
+
+# Captain Endpoints Documentation
+
+## Overview
+This documentation provides details about the endpoints for managing captain resources in the application. Captains are registered with their personal and vehicle information.
+
+---
+
+## Base URL
+`/captains`
+
+---
+
+### POST `/register`
+
+Registers a new captain.
+
+#### Request
+**Headers**:
+- `Content-Type: application/json`
+
+**Body**:
+```json
+{
+  "fullname": {
+    "firstname": "string",
+    "lastname": "string"
+  },
+  "email": "string",
+  "password": "string",
+  "vehicle": {
+    "color": "string",
+    "plate": "string",
+    "capacity": integer,
+    "vehicleType": "car | motorcycle | auto"
+  }
+}
+```
+
+**Validation Rules**:
+- `email`: Must be a valid email address.
+- `fullname.firstname`: Minimum 3 characters.
+- `password`: Minimum 6 characters.
+- `vehicle.color`: Minimum 3 characters.
+- `vehicle.plate`: Minimum 3 characters.
+- `vehicle.capacity`: Must be at least 1.
+- `vehicle.vehicleType`: Must be one of `car`, `motorcycle`, or `auto`.
+
+#### Response
+**Success (201)**:
+```json
+{
+  "token": "string",
+  "captain": {
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": integer,
+      "vehicleType": "string"
+    }
+  }
+}
+```
+
+**Error (400)**:
+- Missing or invalid fields:
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+- Duplicate captain:
+```json
+{
+  "message": "Captain already exist"
+}
+```
+
+---
