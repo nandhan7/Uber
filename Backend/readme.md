@@ -452,3 +452,67 @@ Registers a new captain.
 ```
 
 ---
+
+### GET `/profile`
+
+Retrieves the profile of the currently authenticated captain.
+
+#### Request
+**Headers**:
+- `Authorization`: `Bearer <token>`
+
+#### Response
+**Success (200)**:
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": integer,
+      "vehicleType": "string"
+    }
+  }
+}
+```
+
+**Error (401)**:
+- Unauthorized:
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+### GET `/logout`
+
+Logs out the currently authenticated captain by blacklisting their token.
+
+#### Request
+**Headers**:
+- `Authorization`: `Bearer <token>`
+
+#### Response
+**Success (200)**:
+```json
+{
+  "message": "Logout successfully"
+}
+```
+
+**Error (401)**:
+- Unauthorized:
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
