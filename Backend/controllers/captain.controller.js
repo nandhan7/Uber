@@ -58,6 +58,9 @@ module.exports.loginCaptain = async (req, res, next) => {
 }
 
 module.exports.getCaptainProfile = async (req, res, next) => {
+    if (req.captain === null) {
+        return res.status(401).json({ message: "Not Authorized" })
+    }
     res.status(200).json({ captain: req.captain })
 }
 
