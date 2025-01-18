@@ -13,32 +13,33 @@ const CaptainProtectWrapper = ({ children }) => {
     if (!token) {
       console.log("Redirecting to login");
       navigate("/captain-login");
+      return;
     }
-  }, [token, navigate]);
+    axios
+      .get(`${import.meta.env.VITE_BASE_URL}/captains/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          setCaptain(response.data.captain);
+          setIsLoading(false);
+        }
 
-  // Dependencies to ensure the effect runs when necessary
-  axios
-    .get(`${import.meta.env.VITE_BASE_URL}/captains/profile`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      if (response.status === 200) {
-        setCaptain(response.data.captain);
-        setIsLoading(false);
-      }
-
-      if (response.status === 401) {
+        if (response.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/captain-login");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
         localStorage.removeItem("token");
         navigate("/captain-login");
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      localStorage.removeItem("token");
-      navigate("/captain-login");
-    });
+      });
+  }, [token, navigate, setCaptain]);
+
+  // Dependencies to ensure the effect runs when necessary
 
   if (isLoading) {
     return <div>Loading....</div>;

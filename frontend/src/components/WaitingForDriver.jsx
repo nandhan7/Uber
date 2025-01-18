@@ -52,7 +52,6 @@ const WaitingForDriver = (props) => {
           <p className="text-sm -mt-1 text-gray-600">Cash</p>
         </div>
       </div>
-      <div></div>
     </div>
   );
 };
