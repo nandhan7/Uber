@@ -1,4 +1,5 @@
 const axios = require('axios');
+const captainModel = require('../models/captain.model');
 require('dotenv').config()
 
 const axiosInstance = axios.create();
@@ -37,13 +38,13 @@ module.exports.getDistanceTime = async (origin, destination) => {
     const apiKey = process.env.GOOGLE_MAPS_API;
     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
 
-    try{
-        const response=await axios.get(url);
-        if(response.data.status==='OK'){
-            const {distance, duration}=response.data.rows[0].elements[0];
-            return {distance, duration};
+    try {
+        const response = await axios.get(url);
+        if (response.data.status === 'OK') {
+            const { distance, duration } = response.data.rows[0].elements[0];
+            return { distance, duration };
         }
-    }catch(error){
+    } catch (error) {
         console.error('Error fetching distance and time:', error.message);
         throw error;
     }
@@ -67,4 +68,16 @@ module.exports.getAutocompleteSuggestions = async (input) => {
         console.error('Error fetching suggestions:', error.message);
         throw error;
     }
+}
+
+module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
+    const captains = await captainModel.find({
+        location: {
+            $geoWithin: {
+                $centerSphere: [[ltd, lng], radius / 6371]
+            }
+        }
+    })
+
+    return captains;
 }

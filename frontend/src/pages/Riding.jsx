@@ -1,7 +1,29 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSocket } from "../context/SocketContext";
+import LiveTracking from "../components/LiveTracking";
 
 const Riding = (props) => {
+  const location = useLocation();
+  const ride = location.state?.ride.data;
+
+  const { socket } = useSocket();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleRideEnded = () => {
+      // Store callback in a variable
+
+      navigate("/home");
+    };
+
+    socket.on("ride-ended", handleRideEnded); // Add listener
+
+    return () => {
+      socket.off("ride-ended", handleRideEnded); // Remove listener on unmount
+    };
+  }, [socket, navigate]);
+
   return (
     <div className="h-screen">
       <Link
@@ -11,10 +33,11 @@ const Riding = (props) => {
         <i className="text-lg font-medium ri-home-line"></i>
       </Link>
       <div className="h-1/2">
-        <img
+        {/* <img
           className="w-full h-full object-cover"
           src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-        />
+        /> */}
+        <LiveTracking />
       </div>
 
       <div className="h-1/2 p-4">
@@ -25,9 +48,11 @@ const Riding = (props) => {
               src="https://i.pinimg.com/originals/93/c1/05/93c105244c0a3de81267a89cb13386f7.png"
             />
             <div className="text-right">
-              <h2 className="text-lg font-medium">Nandhan</h2>
+              <h2 className="text-lg font-medium capitalize">
+                {ride?.captain.fullname.firstname}
+              </h2>
               <h4 className="text-xl font-semibold -mt-1 -mb-1">
-                KA01 AB 1234
+                {ride?.captain.vehicle.plate}
               </h4>
               <h4 className="text-sm text-gray-600">Maruthi suzuki</h4>
             </div>
@@ -37,9 +62,9 @@ const Riding = (props) => {
               <div className="flex items-center gap-5 p-2 border-b-2">
                 <i className="ri-map-pin-fill"></i>
                 <div>
-                  <h3 className="text-lg font-medium">562/11-A</h3>
+                  <h3 className="text-lg font-medium">Destination</h3>
                   <p className="text-sm -mt-1 text-gray-600">
-                    Iskon Temple,Bangalore
+                    {ride?.destination}
                   </p>
                 </div>
               </div>
@@ -48,7 +73,7 @@ const Riding = (props) => {
           <div className="flex items-center gap-5 p-2 ">
             <i className="ri-currency-line"></i>
             <div>
-              <h3 className="text-lg font-medium">₹193.52</h3>
+              <h3 className="text-lg font-medium">₹{ride?.fare}</h3>
               <p className="text-sm -mt-1 text-gray-600">Cash</p>
             </div>
           </div>

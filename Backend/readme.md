@@ -516,3 +516,330 @@ Logs out the currently authenticated captain by blacklisting their token.
 ```
 
 ---
+
+
+# Ride Endpoints Documentation
+
+## Overview
+This documentation provides details about the endpoints for managing ride resources in the application. Users can create rides and calculate fares.
+
+---
+
+## Base URL
+`/rides`
+
+---
+
+### POST `/create`
+
+Creates a new ride.
+
+#### Request
+**Headers**:
+- `Content-Type: application/json`
+- `Authorization`: `Bearer <token>`
+
+**Body**:
+```json
+{
+  "pickup": "string",
+  "destination": "string",
+  "vehicleType": "auto | car | motorcycle"
+}
+```
+
+**Validation Rules**:
+- `pickup`: Minimum 3 characters.
+- `destination`: Minimum 3 characters.
+- `vehicleType`: Must be one of `auto`, `car`, or `motorcycle`.
+
+#### Response
+**Success (200)**:
+```json
+{
+  "status": "success",
+  "data": {
+    "id": "string",
+    "pickup": "string",
+    "destination": "string",
+    "vehicleType": "string",
+    "user": "string",
+    "createdAt": "string",
+    "updatedAt": "string"
+  }
+}
+```
+
+**Error (400)**:
+- Missing or invalid fields:
+```json
+{
+  "status": "error",
+  "message": [
+    {
+      "msg": "Invalid pickup address",
+      "param": "pickup",
+      "location": "body"
+    }
+  ]
+}
+```
+
+**Error (500)**:
+- Internal server error:
+```json
+{
+  "status": "error",
+  "message": "Internal server error"
+}
+```
+
+---
+
+### GET `/get-fare`
+
+Calculates the fare for a ride.
+
+#### Request
+**Headers**:
+- `Authorization`: `Bearer <token>`
+
+**Query Parameters**:
+- `pickup`: Minimum 3 characters.
+- `destination`: Minimum 3 characters.
+
+#### Response
+**Success (200)**:
+```json
+{
+  "status": "success",
+  "data": 123.45
+}
+```
+
+**Error (400)**:
+- Missing or invalid fields:
+```json
+{
+  "status": "error",
+  "message": [
+    {
+      "msg": "Invalid pickup address",
+      "param": "pickup",
+      "location": "query"
+    }
+  ]
+}
+```
+
+**Error (500)**:
+- Internal server error:
+```json
+{
+  "status": "error",
+  "message": "Internal server error"
+}
+```
+
+---
+
+# Map Endpoints Documentation
+
+## Overview
+This documentation provides details about the endpoints for managing map resources in the application. Users can get coordinates, distance and time, and autocomplete suggestions.
+
+---
+
+## Base URL
+`/maps`
+
+---
+
+### GET `/get-coordinates`
+
+Retrieves the coordinates for a given address.
+
+#### Request
+**Headers**:
+- `Authorization`: `Bearer <token>`
+
+**Query Parameters**:
+- `address`: Minimum 3 characters.
+
+#### Response
+**Success (200)**:
+```json
+{
+  "status": "success",
+  "data": {
+    "lat": 12.345678,
+    "lng": 98.765432
+  }
+}
+```
+
+**Error (400)**:
+- Missing or invalid fields:
+```json
+{
+  "status": "error",
+  "message": [
+    {
+      "msg": "Invalid address",
+      "param": "address",
+      "location": "query"
+    }
+  ]
+}
+```
+
+**Error (500)**:
+- Internal server error:
+```json
+{
+  "status": "error",
+  "message": "Internal server error"
+}
+```
+
+---
+
+### GET `/get-distance-time`
+
+Retrieves the distance and time between two locations.
+
+#### Request
+**Headers**:
+- `Authorization`: `Bearer <token>`
+
+**Query Parameters**:
+- `origin`: Minimum 3 characters.
+- `destination`: Minimum 3 characters.
+
+#### Response
+**Success (200)**:
+```json
+{
+  "status": "success",
+  "data": {
+    "distance": {
+      "text": "12.3 km",
+      "value": 12345
+    },
+    "duration": {
+      "text": "15 mins",
+      "value": 900
+    }
+  }
+}
+```
+
+**Error (400)**:
+- Missing or invalid fields:
+```json
+{
+  "status": "error",
+  "message": [
+    {
+      "msg": "Invalid origin",
+      "param": "origin",
+      "location": "query"
+    }
+  ]
+}
+```
+
+**Error (500)**:
+- Internal server error:
+```json
+{
+  "status": "error",
+  "message": "Internal server error"
+}
+```
+
+---
+
+### GET `/get-suggestions`
+
+Retrieves autocomplete suggestions for a given input.
+
+#### Request
+**Headers**:
+- `Authorization`: `Bearer <token>`
+
+**Query Parameters**:
+- `input`: Minimum 3 characters.
+
+#### Response
+**Success (200)**:
+```json
+{
+  "status": "success",
+  "data": [
+    "Suggestion 1",
+    "Suggestion 2",
+    "Suggestion 3"
+  ]
+}
+```
+
+**Error (400)**:
+- Missing or invalid fields:
+```json
+{
+  "status": "error",
+  "message": [
+    {
+      "msg": "Invalid input",
+      "param": "input",
+      "location": "query"
+    }
+  ]
+}
+```
+
+**Error (500)**:
+- Internal server error:
+```json
+{
+  "status": "error",
+  "message": "Internal server error"
+}
+```
+### Rides
+
+#### `GET /rides/get-fare`
+
+Retrieves the fare and distance for a ride.
+
+*   **Authentication:** `authMiddleware.authUser`
+*   **Query Parameters:**
+    *   `pickup`: (Required) String, minimum 3 characters.
+    *   `destination`: (Required) String, minimum 3 characters.
+
+#### `POST /rides/confirm`
+
+Confirms a ride and assigns a captain.
+
+*   **Authentication:** `authMiddleware.authCaptain`
+*   **Body (JSON):**
+    *   `rideId`: (Required) MongoDB ObjectId of the ride.
+    *   `captain`: (Required) ID of the captain.
+
+#### `POST /rides/start-ride`
+
+Starts a ride using OTP verification.
+
+*   **Authentication:** `authMiddleware.authCaptain`
+*   **Body (JSON):**
+    *   `rideId`: (Required) MongoDB ObjectId of the ride.
+    *   `otp`: (Required) 6-digit OTP.
+
+#### `POST /rides/end-ride`
+
+Ends a ride.
+
+*   **Authentication:** `authMiddleware.authCaptain`
+*   **Body (JSON):**
+    *   `rideId`: (Required) MongoDB ObjectId of the ride.

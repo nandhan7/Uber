@@ -1,27 +1,36 @@
 import React from "react";
 
-const LocationSearchPanel = (props) => {
+const LocationSearchPanel = ({
+  suggestions,
+  setVehiclePanel,
+  setPanel,
+  setPickup,
+  setDestination,
+  activeField,
+}) => {
   //sample array for location
-  const locations = [
-    "40B Rameshwaram Cafe , Bangalore 560027 ",
-    "Pump House, J.P. Nagar, Bangalore 560078 ",
-    "Iskon Temple,Rajajinagar, Bengaluru 560010",
-  ];
+  const handleSuggestionClick = (suggestion, e) => {
+    e.stopPropagation();
+    if (activeField === "pickup") {
+      setPickup(suggestion);
+    } else if (activeField === "destination") {
+      setDestination(suggestion);
+    }
+    suggestions = [];
+  };
+
   return (
     <div>
-      {locations.map((location, index) => (
+      {suggestions.map((elem, idx) => (
         <div
-          onClick={() => {
-            props.setVehiclePanelOpen(true);
-            props.setPanel(false);
-          }}
-          key={index}
-          className="flex gap-4 p-3 active:border-black border-gray-100 rounded-xl border-2  items-center my-2 justify-start"
+          key={idx}
+          onClick={(e) => handleSuggestionClick(elem, e)}
+          className="flex gap-4 border-2 p-3 border-gray-50 active:border-black rounded-xl items-center my-2 justify-start"
         >
           <h2 className="bg-[#eee] h-8 flex items-center justify-center w-12 rounded-full">
-            <i class="ri-map-pin-line"></i>
+            <i className="ri-map-pin-fill"></i>
           </h2>
-          <h4 className="font-medium text-base">{location}</h4>
+          <h4 className="font-medium">{elem}</h4>
         </div>
       ))}
     </div>

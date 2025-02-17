@@ -18,7 +18,11 @@ const RidePopUp = (props) => {
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6fOZZUBxA1cDlT3S9j3wso-DgS5S5nRudgeLGIjJfYSBU8TiZu7xhk0k&s"
             alt=""
           />
-          <h2 className="text-lg font-medium">Daulat Khan</h2>
+          <h2 className="text-lg font-medium">
+            {props.ride?.user.fullname.firstname +
+              " " +
+              props.ride?.user.fullname.lastname}
+          </h2>
         </div>
         <h5 className="text-lg font-semibold">2.2 KM</h5>
       </div>
@@ -27,18 +31,18 @@ const RidePopUp = (props) => {
           <div className="flex items-center gap-5 p-2 border-b-2">
             <i className=" text-lg ri-map-pin-2-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">Pickup</h3>
               <p className="text-sm -mt-1 text-gray-600">
-                Iskon Temple,Bangalore
+                {props.ride?.pickup}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-2 border-b-2">
             <i className="ri-map-pin-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">Destination</h3>
               <p className="text-sm -mt-1 text-gray-600">
-                Iskon Temple,Bangalore
+                {props.ride?.destination}
               </p>
             </div>
           </div>
@@ -46,7 +50,7 @@ const RidePopUp = (props) => {
           <div className="flex items-center gap-5 p-2 ">
             <i className="ri-currency-line"></i>
             <div>
-              <h3 className="text-lg font-medium">₹193.52</h3>
+              <h3 className="text-lg font-medium">₹{props.ride?.fare}</h3>
               <p className="text-sm -mt-1 text-gray-600">Cash</p>
             </div>
           </div>
@@ -56,6 +60,7 @@ const RidePopUp = (props) => {
           <button
             onClick={() => {
               props.setConfirmRidePopUpPanel(true);
+              props.confirmRide();
             }}
             className="w-full mt-5 bg-green-600 text-white font-semibold rounded-lg p-2 px-8"
           >

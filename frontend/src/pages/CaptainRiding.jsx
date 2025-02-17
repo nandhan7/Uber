@@ -1,13 +1,16 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FinishRide } from "../components/FinishRide";
+import LiveTracking from "../components/LiveTracking";
 
 const CaptainRiding = (props) => {
   const [finishRidePanel, setFinishRidePanel] = useState(false);
   const finishRidePanelRef = useRef(null);
-
+  const location = useLocation();
+  const rideData = location.state?.ride;
+  console.log(rideData);
   useGSAP(
     function () {
       if (finishRidePanel) {
@@ -38,10 +41,11 @@ const CaptainRiding = (props) => {
         </Link>
       </div>
       <div className="h-4/5">
-        <img
+        {/* <img
           className="w-full h-full object-cover"
           src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-        />
+        /> */}
+        <LiveTracking/>
       </div>
       <div
         className="h-1/5 p-6 bg-yellow-500 flex items-center justify-between relative"
@@ -62,7 +66,7 @@ const CaptainRiding = (props) => {
         ref={finishRidePanelRef}
         className="fixed w-full h-screen z-10 translate-y-full bottom-0 px-3 py-6  bg-white pt-12"
       >
-        <FinishRide setFinishRidePanel={setFinishRidePanel} />
+        <FinishRide ride={rideData} setFinishRidePanel={setFinishRidePanel} />
       </div>
     </div>
   );
